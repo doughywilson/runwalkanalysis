@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-data_files = sorted(glob.glob("./csv/*.csv"))
+data_files = sorted(glob.glob("./csv/*P0*.csv"))
 
 z_thresh = 30.0
 fS = 1000  # Sampling rate.
@@ -40,9 +40,11 @@ for file in data_files:
     force_y[np.abs(force_y) < z_thresh] = 0.0
     force_z[np.abs(force_z) < z_thresh] = 0.0
 
+    #Calculations
     duty = np.count_nonzero(force_z) / len(force_z)
+    horizontal_energy = np.abs(force_x).mean()*duty*meters_per_second
     
-    print("{} - vel: {:.2f}, pace: {:.2f}, duty: {:.2f}".format(file[6:], meters_per_second, min_per_mile, duty))
+    print("{} - vel: {:.2f}, pace: {:.2f}, duty: {:.2f}, Eh: {:.2f}".format(file[6:], meters_per_second, min_per_mile, duty, horizontal_energy))
     # plt.grid()
     # plt.plot(force_x, 'r', label='x')
     # plt.plot(force_y, 'b', label='y')
