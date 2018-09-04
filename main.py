@@ -3,12 +3,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-data_files = sorted(glob.glob("./csv/*P0*.csv"))
+data_files = sorted(glob.glob("./csv/*P10*.csv"))
+index_start = 5000
+index_length = 20000
 
 z_thresh = 30.0
 fS = 1000  # Sampling rate.
 fL = 20  # Cutoff frequency.
 N = 115  # Filter length, must be odd.
+dt = 1.0/1000
 
 #FILTER - https://fiiir.com/
 h = np.sinc(2 * fL / fS * (np.arange(N) - (N - 1) / 2.))
@@ -30,6 +33,11 @@ for file in data_files:
         force_y[i] = (line[3])
         force_z[i] = (line[4])
 
+    #Crop the files
+    force_x = force_x[index_start:index_start+index_length]
+    force_y = force_y[index_start:index_start+index_length]
+    force_z = force_z[index_start:index_start+index_length]
+
     #Apply the filter
     force_x = np.convolve(h, force_x)
     force_y = np.convolve(h, force_y)
@@ -42,7 +50,9 @@ for file in data_files:
 
     #Calculations
     duty = np.count_nonzero(force_z) / len(force_z)
-    horizontal_energy = np.abs(force_x).mean()*duty*meters_per_second
+    Et = np.sqrt(force_x ** 2 + force_y**2 + force_z**2)
+    horizontal_energy = Et.sum()*duty*meters_per_second*dt
+    # horizontal_energy = np.abs(force_x).sum()*duty*meters_per_second*dt
     
     print("{} - vel: {:.2f}, pace: {:.2f}, duty: {:.2f}, Eh: {:.2f}".format(file[6:], meters_per_second, min_per_mile, duty, horizontal_energy))
     # plt.grid()
