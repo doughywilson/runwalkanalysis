@@ -3,11 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-data_files = sorted(glob.glob("./csv/J*P0*.csv"))
+data_files = sorted(glob.glob("./csv/G*P0*.csv"))
 index_start = 5000
 index_length = 20000
 
-z_thresh = 50.0
+z_thresh = 20.0
 fS = 1000  # Sampling rate.
 fL = 50  # Cutoff frequency.
 N = 115  # Filter length, must be odd.
@@ -46,9 +46,9 @@ for file in data_files:
     force_z = force_z[index_start:index_start+index_length]
 
     #Noise gate
-    force_x[np.abs(force_x) < z_thresh] = 0.0
-    force_y[np.abs(force_y) < z_thresh] = 0.0
-    force_z[np.abs(force_z) < z_thresh] = 0.0
+    # force_x[np.abs(force_x) < z_thresh] = 0.0
+    # force_y[np.abs(force_y) < z_thresh] = 0.0
+    # force_z[np.abs(force_z) < z_thresh] = 0.0
     duty = np.count_nonzero(force_z) / float(len(force_z))
 
     #Calculations
@@ -56,8 +56,12 @@ for file in data_files:
     horizontal_energy = Et.sum()*duty*meters_per_second*dt
     # horizontal_energy = np.abs(force_x).sum()*duty*meters_per_second*dt
     # height = 1/8 * 9.8 * t**2
+
+    Ih = np.abs(force_y).sum()*dt
+    Iv = np.abs(force_z).sum()*dt
+    T = Ih + Iv
     
-    print("{} - vel: {:.2f}, pace: {:.2f}, duty: {:.2f}, Eh: {:.2f}".format(file[6:], meters_per_second, min_per_mile, duty, horizontal_energy))
+    print("{} - vel: {:.2f}, pace: {:.2f}, duty: {:.2f}, Ih: {:.2f}, Iv: {:.2f}, T: {:.2f}".format(file[6:], meters_per_second, min_per_mile, duty, Ih, Iv, T))
     # plt.grid()
     # plt.plot(force_x, 'r', label='x')
     # plt.plot(force_y, 'b', label='y')
