@@ -9,7 +9,7 @@ index_length = 2000
 
 z_thresh = 25.0
 fS = 1000  # Sampling rate.
-fL = 450  # Cutoff frequency.
+fL = 480  # Cutoff frequency.
 N = 115  # Filter length, must be odd.
 dt = 1.0/1000
 
@@ -48,7 +48,7 @@ for file in data_files:
     # force_y[np.abs(force_y) < z_thresh] = 0.0
     # force_z[np.abs(force_z) < z_thresh] = 0.0
     # duty = np.count_nonzero(force_z) / float(len(force_z))
-    duty = len(force_z[np.abs(force_z) > z_thresh]) / float(len(force_z))
+    duty = float(len(force_z[np.abs(force_z) > z_thresh])) / float(len(force_z))
 
     #Calculations
     Et = np.sqrt(force_y**2)
@@ -62,13 +62,12 @@ for file in data_files:
     Ix = np.abs(force_x).sum()*dt
     T = Ih + Iv + Ix
     
-    print("{} - vel: {:.2f}, pace: {:.2f}, duty: {:.2f}, Eh: {:.2f}, Ev: {:.2f}"\
-        .format(file[6:], meters_per_second, min_per_mile, duty, horizontal_energy, vertical_energy))
-    # plt.grid()
-    # plt.ylim(-2100, 500)
-    # # plt.plot(force_x, 'r', label='x')
-    # plt.plot(force_y, 'b', label='y')
-    # plt.plot(force_z, 'g', label='z')
-    # plt.legend()
-    # plt.show()
+    print("{} - vel: {:.2f}, pace: {:.2f}, duty: {:.2f}, Ih: {:.2f}, Iv: {:.2f}, Ix: {:.2f}, T: {:.2f}".format(file[6:], meters_per_second, min_per_mile, duty, Ih, Iv ,Ix, T))
+    plt.grid()
+    plt.plot(force_x, 'r', label='x')
+    plt.plot(force_y, 'b', label='y')
+    plt.plot(force_z, 'g', label='z')
+    plt.ylim(-2100, 400)
+    plt.legend()
+    plt.show()
 
