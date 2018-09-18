@@ -9,7 +9,7 @@ index_length = 20000
 
 z_thresh = 10.0
 fS = 1000  # Sampling rate.
-fL = 50  # Cutoff frequency.
+fL = 500  # Cutoff frequency.
 N = 115  # Filter length, must be odd.
 dt = 1.0/1000
 
@@ -33,12 +33,10 @@ for file in data_files:
         force_y[i] = (line[3])
         force_z[i] = (line[4])
 
-
     #Apply the filter
-    # force_x = np.convolve(h, force_x)
-    # force_y = np.convolve(h, force_y)
-    # force_z = np.convolve(h, force_z)
-
+    force_x = np.convolve(h, force_x)
+    force_y = np.convolve(h, force_y)
+    force_z = np.convolve(h, force_z)
     
     #Crop the files
     force_x = force_x[index_start:index_start+index_length]
@@ -46,10 +44,11 @@ for file in data_files:
     force_z = force_z[index_start:index_start+index_length]
 
     #Noise gate
-    force_x[np.abs(force_x) < z_thresh] = 0.0
-    force_y[np.abs(force_y) < z_thresh] = 0.0
-    force_z[np.abs(force_z) < z_thresh] = 0.0
-    duty = np.count_nonzero(force_z) / float(len(force_z))
+    # force_x[np.abs(force_x) < z_thresh] = 0.0
+    # force_y[np.abs(force_y) < z_thresh] = 0.0
+    # force_z[np.abs(force_z) < z_thresh] = 0.0
+    # duty = np.count_nonzero(force_z) / float(len(force_z))
+    duty = float(len(force_z[np.abs(force_z) > z_thresh])) / float(len(force_z))
 
     #Calculations
     Et = np.sqrt(force_y**2)
@@ -63,10 +62,11 @@ for file in data_files:
     T = Ih + Iv + Ix
     
     print("{} - vel: {:.2f}, pace: {:.2f}, duty: {:.2f}, Ih: {:.2f}, Iv: {:.2f}, Ix: {:.2f}, T: {:.2f}".format(file[6:], meters_per_second, min_per_mile, duty, Ih, Iv ,Ix, T))
-    # plt.grid()
-    # plt.plot(force_x, 'r', label='x')
-    # plt.plot(force_y, 'b', label='y')
-    # plt.plot(force_z, 'g', label='z')
-    # plt.legend()
-    # plt.show()
+    plt.grid()
+    plt.plot(force_x, 'r', label='x')
+    plt.plot(force_y, 'b', label='y')
+    plt.plot(force_z, 'g', label='z')
+    plt.ylim(-2100, 400)
+    plt.legend()
+    plt.show()
 
