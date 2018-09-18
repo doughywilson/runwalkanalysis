@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-data_files = sorted(glob.glob("./csv/J*P0*.csv"))
+data_files = sorted(glob.glob("./csv/G*P0*.csv"))
 index_start = 5000
 index_length = 2000
 
@@ -33,12 +33,10 @@ for file in data_files:
         force_y[i] = (line[3])
         force_z[i] = (line[4])
 
-
     #Apply the filter
     force_x = np.convolve(h, force_x)
     force_y = np.convolve(h, force_y)
     force_z = np.convolve(h, force_z)
-
     
     #Crop the files
     force_x = force_x[index_start:index_start+index_length]
@@ -58,6 +56,11 @@ for file in data_files:
     vertical_energy = np.abs(force_z**2).sum()
     # horizontal_energy = np.abs(force_x).sum()*duty*meters_per_second*dt
     # height = 1/8 * 9.8 * t**2
+
+    Ih = np.abs(force_y).sum()*dt
+    Iv = np.abs(force_z).sum()*dt
+    Ix = np.abs(force_x).sum()*dt
+    T = Ih + Iv + Ix
     
     print("{} - vel: {:.2f}, pace: {:.2f}, duty: {:.2f}, Eh: {:.2f}, Ev: {:.2f}"\
         .format(file[6:], meters_per_second, min_per_mile, duty, horizontal_energy, vertical_energy))
