@@ -3,15 +3,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-data_files = sorted(glob.glob("./csv/G*P0*.csv"))
+data_files = sorted(glob.glob("./csv/J*P0*.csv"))
 index_start = 5000
 index_length = 2000
 
 z_thresh = 25.0
-fS = 1000  # Sampling rate.
-fL = 480  # Cutoff frequency.
+fS = 1000.0  # Sampling rate.
+fL = 25.0  # Cutoff frequency.
 N = 115  # Filter length, must be odd.
-dt = 1.0/1000
+dt = 1.0/fS
 
 #FILTER - https://fiiir.com/
 h = np.sinc(2 * fL / fS * (np.arange(N) - (N - 1) / 2.))
@@ -64,7 +64,7 @@ for file in data_files:
     
     print("{} - vel: {:.2f}, pace: {:.2f}, duty: {:.2f}, Ih: {:.2f}, Iv: {:.2f}, Ix: {:.2f}, T: {:.2f}".format(file[6:], meters_per_second, min_per_mile, duty, Ih, Iv ,Ix, T))
     plt.grid()
-    plt.plot(force_x, 'r', label='x')
+    # plt.plot(force_x, 'r', label='x')
     plt.plot(force_y, 'b', label='y')
     plt.plot(force_z, 'g', label='z')
     plt.ylim(-2100, 400)
